@@ -1,0 +1,36 @@
+#include <Arduino.h>
+
+void setup() {
+  // Inicializa la comunicación serial USB
+  Serial.begin(115200);
+  
+  // Espera hasta que el puerto serial esté listo (solo para placas con USB nativo)
+  while(!Serial) {
+    delay(10);
+  }
+  
+  // Configura el LED integrado para feedback visual
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+  
+  Serial.println("\n--- ESP32-S3 Serial Test ---");
+  Serial.println("Escribe algo en el monitor serial...");
+}
+
+void loop() {
+  // Eco de todo lo recibido por serial
+  if (Serial.available()) {
+    String input = Serial.readStringUntil('\n');
+    input.trim();  // Elimina espacios y saltos de línea
+    
+    if (input.length() > 0) {
+      Serial.print("Recibido: ");
+      Serial.println(input);
+      
+      // Feedback visual con LED
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(100);
+      digitalWrite(LED_BUILTIN, LOW);
+    }
+  }
+}
