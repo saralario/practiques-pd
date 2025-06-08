@@ -1,0 +1,49 @@
+#include <WiFi.h>
+#include <WebServer.h>
+
+// Configuració de la Xarxa Wi-Fi (nom i contrasenya)
+const char* ssid = "ESP32-AP"; 
+const char* password = "Sara#8"; 
+
+WebServer server(80); // Creació d'un servidor web 
+
+// Declaració de la funció (handle_root) que gestionarà la pàgina principal
+void handle_root();
+
+void setup() {// Inicialitzem el port sèrie
+  Serial.begin(115200);
+  Serial.println("Configurant punt d'accés...");
+  
+  // Configurar el ESP32 com a punt d'accés Wi-Fi
+  WiFi.softAP(ssid, password);  
+  Serial.println("Punt d'accés habilitat.");
+
+  // Mostrar l'adreça IP del punt d'accés
+  Serial.print("Adreça IP del AP: ");
+  Serial.println(WiFi.softAPIP()); // Mostra l'IP del punt d'accés
+
+  // Configurar la ruta principal ("/") i associar-la a la funció handle_root
+  server.on("/", handle_root);
+
+  // Iniciar el servidor web (HTTP)
+  server.begin();
+  Serial.println("Servidor HTTP en funcionament.");
+}
+
+void loop() {
+  // Gestionar les sol·licituds HTTP entrants
+  server.handleClient();
+}
+
+// Contingut HTML que es mostrarà a la web del servidor
+String HTML = "<!DOCTYPE html>\
+               <html>\
+               <body>\
+               <h1>My Benvingut al servidor de l'ESP32 en mode AP! Has accedit conrrectament a la pàgina. - Access Point Mode &#128522;</h1>\
+               </body>\
+               </html>";
+
+// Funció per gestionar la sol·licitud a la pàgina principal (/)
+void handle_root() {
+  server.send(200, "text/html", HTML); // Enviar el contingut HTML al navegador
+}
